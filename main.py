@@ -264,7 +264,7 @@ data_frame_el_espectador = pd.read_excel('el_espectador.xlsx')
 data_frame_el_tiempo = pd.read_excel('eltiempo.xlsx')
 data_frame_semana = pd.read_excel('semana.xlsx')
 
-#Análisis de sentimientos emocional
+#Análisis de sentimientos
 print("VADER")
 print("-----")
 vader_result = vader_dic(data_frame_el_tiempo, data_frame_el_espectador, data_frame_semana)
