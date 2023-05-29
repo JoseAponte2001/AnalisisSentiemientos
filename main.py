@@ -3,6 +3,8 @@ from textblob import TextBlob
 from nltk.sentiment import SentimentIntensityAnalyzer
 from nrclex import NRCLex
 import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
 
 ## ANÁLISIS DE SENTIMIENTOS Y DETECCIÓN DE EMOCIONES
 def vader_dic(frame_el_tiempo, frame_el_espectador, frame_semana):
@@ -259,6 +261,27 @@ def nrclex_f(texto):
     emotion = max(emotions, key=emotions.get)
     return emotion
 
+def graficar(diccionario, texto):
+    claves = list(diccionario.keys())
+    subclaves = list(diccionario[claves[0]].keys())
+    valores = np.array([[diccionario[clave][subclave] for subclave in subclaves] for clave in claves])
+
+    ancho_barras = 0.2/len(claves)
+    posiciones = np.arange(len(claves))
+
+    fig, ax = plt.subplots()
+    for i, subclave in enumerate(subclaves):
+        ax.bar(posiciones + i * ancho_barras, valores[:, i], width=ancho_barras, label=subclave)
+
+    ax.set_xticks(posiciones + (len(subclaves) - 1) * ancho_barras / 2)
+    ax.set_xticklabels(claves)
+    ax.legend()
+    ax.set_xlabel("Claves")
+    ax.set_ylabel("Valores")
+    ax.set_title("Gráfico de barras " + str(texto))
+
+    plt.show()
+
 # Leer el archivo Excel
 data_frame_el_espectador = pd.read_excel('el_espectador.xlsx')
 data_frame_el_tiempo = pd.read_excel('eltiempo.xlsx')
@@ -271,6 +294,8 @@ vader_result = vader_dic(data_frame_el_tiempo, data_frame_el_espectador, data_fr
 print("El Tiempo: " + str(vader_result.get("elTiempo")))
 print("Semana: " + str(vader_result.get("semana")))
 print("El Espectador: " + str(vader_result.get("elEspectador")))
+
+
 print("\n")
 
 print("TEXT_BLOB")
@@ -296,3 +321,9 @@ empath_result = empath_dic(data_frame_el_tiempo, data_frame_el_espectador, data_
 print("El Tiempo: " + str(empath_result.get("elTiempo")))
 print("Semana: " + str(empath_result.get("semana")))
 print("El Espectador: " + str(empath_result.get("elEspectador")))
+
+
+graficar(vader_result, "vader")
+graficar(TextBlob_result, "textblob")
+graficar(nrclex_result, "nrclex")
+graficar(empath_result, "empath")
